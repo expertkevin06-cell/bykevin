@@ -1,7 +1,7 @@
 {
   "name": "ByKevin — Poste Atelier",
   "short_name": "ByKevin",
-  "description": "Pré-visite contrôle technique, diagnostic IA, dossiers juridiques auto, OBD/ELM, contrôle d'accès tiers par notification.",
+  "description": "Pré-visite contrôle technique, diagnostic IA, dossiers juridiques auto, OBD/ELM et gestion fiable des accès tiers avec file persistante.",
   "id": "./",
   "start_url": "./",
   "scope": "./",
@@ -20,6 +20,7 @@
     { "src": "./icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ],
   "shortcuts": [
+    { "name": "Demandes d'accès", "url": "./?tab=access" },
     { "name": "Pré-visite CT", "url": "./?tab=mrt" },
     { "name": "Diagnostic", "url": "./?tab=diag" },
     { "name": "Juridique", "url": "./?tab=legal" },
