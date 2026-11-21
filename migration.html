@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#0B1219"/>
 <title>ByKevin — Migration</title>
 <style>
-:root{--ink-900:#070B10;--ink-800:#0B1219;--ink-700:#111C25;--ink-600:#18262F;--ink-500:#22333D;--line:rgba(255,176,32,.16);--soft:rgba(143,163,176,.14);--amber:#FFB020;--cyan:#22D3EE;--violet:#A78BFA;--red:#FF4D4D;--green:#3DDC84;--text:#EAF2F7;--muted:#8FA3B0;--dim:#5F7482;--mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace}
+:root{--ink-900:#070B10;--ink-700:#111C25;--ink-600:#18262F;--ink-500:#22333D;--soft:rgba(143,163,176,.14);--amber:#FFB020;--cyan:#22D3EE;--red:#FF4D4D;--green:#3DDC84;--text:#EAF2F7;--muted:#8FA3B0;--dim:#5F7482;--mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace}
 *{box-sizing:border-box}
 body{margin:0;background:var(--ink-900);color:var(--text);font-family:Inter,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;padding:22px 16px 60px;max-width:1000px;margin:0 auto;line-height:1.5}
 body::before{content:"";position:fixed;inset:0;z-index:-1;background:radial-gradient(700px 420px at 10% -8%,rgba(255,176,32,.16),transparent 62%),radial-gradient(620px 460px at 92% 106%,rgba(167,139,250,.14),transparent 64%),linear-gradient(rgba(255,176,32,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,176,32,.04) 1px,transparent 1px);background-size:auto,auto,46px 46px,46px 46px}
@@ -45,7 +45,7 @@ pre{background:#050A0E;border:1px solid var(--soft);border-radius:4px;padding:14
 </head>
 <body>
 <h1>🧳 MIGRATION <i>BYKEVIN</i></h1>
-<p class="lead">Fusion des bases locales de <b>appli-aide-technique</b>, <b>autodiag-formation-auto</b>, <b>kevfusion2026</b> et <b>auto-legal-by-kevin</b>. Analyse sans écriture, fusion cumulative, point de restauration automatique.</p>
+<p class="lead">Fusion des bases de <b>appli-aide-technique</b>, <b>autodiag-formation-auto</b>, <b>kevfusion2026</b> et <b>auto-legal-by-kevin</b>. Les demandes d'accès importées sont réinjectées dans la file persistante.</p>
 
 <div class="mod">
   <h2><em>01</em>Source</h2>
@@ -70,14 +70,14 @@ pre{background:#050A0E;border:1px solid var(--soft);border-radius:4px;padding:14
 
 <div class="mod">
   <h2><em>03</em>Retour</h2>
-  <p class="note">Après import, revenez au poste et rechargez-le (Ctrl+Maj+R, ou fermez puis rouvrez l'APK).</p>
+  <p class="note">Après import, revenez au poste et rechargez-le. Les demandes en attente seront rejouées à la connexion administrateur.</p>
   <div class="row"><button id="bk" class="btn b-o">Retourner à ByKevin</button></div>
 </div>
 
 <script>
 (function(){
 "use strict";
-const DBN="bykevin-v2";
+const DBN="bykevin-v3";
 const enc=new TextEncoder(),dec=new TextDecoder();
 const $=s=>document.querySelector(s);
 const now=()=>Date.now();
@@ -85,22 +85,31 @@ const b64=b=>{const u=b instanceof Uint8Array?b:new Uint8Array(b);let s="";for(l
 const unb=s=>{const b=atob(s),u=new Uint8Array(b.length);for(let i=0;i<b.length;i++)u[i]=b.charCodeAt(i);return u;};
 const rp=t=>$("#rp").textContent=t;
 const st=(c,t)=>{const e=$("#st");e.className="pill "+c;e.textContent=t;};
-async function dk(pw,salt,it){const km=await crypto.subtle.importKey("raw",enc.encode(pw),"PBKDF2",false,["deriveKey"]);return crypto.subtle.deriveKey({name:"PBKDF2",salt:unb(salt),iterations:it||120000,hash:"SHA-256"},km,{name:"AES-GCM",length:256},true,["encrypt","decrypt"]);}
+async function dk(pw,salt,it){const km=await crypto.subtle.importKey("raw",enc.encode(pw),"PBKDF2",false,["deriveKey"]);
+return crypto.subtle.deriveKey({name:"PBKDF2",salt:unb(salt),iterations:it||120000,hash:"SHA-256"},km,{name:"AES-GCM",length:256},true,["encrypt","decrypt"]);}
 async function dx(k,iv,ct){return crypto.subtle.decrypt({name:"AES-GCM",iv:unb(iv)},k,unb(ct));}
 let P=null;
-function oidb(){if(P)return P;P=new Promise((res,rej)=>{const r=indexedDB.open(DBN,1);r.onupgradeneeded=()=>{const d=r.result;["kv","secure","queue"].forEach(s=>{if(!d.objectStoreNames.contains(s))d.createObjectStore(s);});};r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);});return P;}
+function oidb(){if(P)return P;P=new Promise((res,rej)=>{const r=indexedDB.open(DBN,1);
+r.onupgradeneeded=()=>{const d=r.result;["kv","secure","queue"].forEach(s=>{if(!d.objectStoreNames.contains(s))d.createObjectStore(s);});};
+r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);});return P;}
 async function ig(s,k){const d=await oidb();return new Promise((res,rej)=>{const t=d.transaction(s,"readonly"),r=t.objectStore(s).get(k);r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);});}
 async function isx(s,k,v){const d=await oidb();return new Promise((res,rej)=>{const t=d.transaction(s,"readwrite"),r=t.objectStore(s).put(v,k);r.onsuccess=()=>res(true);r.onerror=()=>rej(r.error);});}
 async function idx(s,k){const d=await oidb();return new Promise((res,rej)=>{const t=d.transaction(s,"readwrite"),r=t.objectStore(s).delete(k);r.onsuccess=()=>res(true);r.onerror=()=>rej(r.error);});}
-const blank=()=>({version:1,ref:{brands:[],models:[],engines:[],faults:[]},vehicles:{},mrt:{history:{},views:[]},legal:{folders:{}},notifs:[],audit:[],bugs:[],devices:{},requests:{},suivi:[],elm:null,settings:{bg:{on:false,type:"image",url:"",op:.8,blur:0,scrim:.45,fit:"cover",guests:true},code:"Kevin83600",api:"",sound:true,migrated:true}});
+const blank=()=>({version:3,ref:{brands:[],models:[],engines:[],faults:[]},vehicles:{},mrt:{history:{},views:[]},legal:{folders:{}},
+notifs:[],audit:[],bugs:[],devices:{},requests:{},tiers:{},pipe:{queue:[],delivered:{},acked:{}},suivi:[],elm:null,
+settings:{bg:{on:false,type:"image",url:"",op:.8,blur:0,scrim:.45,fit:"cover",guests:true},code:"Kevin83600",api:"",sound:true,poll:10,autoTrusted:true,migrated:true}});
 const isObj=v=>v&&typeof v==="object"&&!Array.isArray(v);
 const isEnc=o=>isObj(o)&&o.v===1&&o.alg==="AES-GCM"&&o.salt&&o.iv&&o.ct;
-const KEYS=["ref","reference","vehicles","workshop","mrt","legal","suivi","requests","access_requests","devices","notifs","audit","bugs","elm","elm_profiles","settings"];
+const KEYS=["ref","reference","vehicles","workshop","mrt","legal","suivi","requests","access_requests","devices","tiers","pipe","notifs","audit","bugs","elm","elm_profiles","settings"];
 const isLocal=o=>isObj(o)&&KEYS.some(k=>Object.prototype.hasOwnProperty.call(o,k));
 function score(o){if(!isLocal(o))return 0;let s=0;
-if(o.ref||o.reference)s+=20;if(o.vehicles||o.workshop)s+=28;if(o.mrt)s+=14;if(o.legal)s+=14;if(o.settings)s+=8;if(o.suivi)s+=6;if(o.requests||o.access_requests)s+=6;
-s+=Object.keys(o.vehicles||o.workshop?.vehicles||{}).length;s+=Object.keys(o.mrt?.history||{}).length;s+=Object.keys(o.legal?.folders||{}).length;return s;}
-function maybe(v){if(typeof v!=="string")return v;const t=v.trim();if((t[0]==="{"&&t.endsWith("}"))||(t[0]==="["&&t.endsWith("]"))){try{return JSON.parse(t);}catch{return v;}}return v;}
+if(o.ref||o.reference)s+=20;if(o.vehicles||o.workshop)s+=28;if(o.mrt)s+=14;if(o.legal)s+=14;
+if(o.requests||o.access_requests)s+=16;if(o.tiers)s+=10;if(o.settings)s+=8;
+s+=Object.keys(o.vehicles||o.workshop?.vehicles||{}).length;
+s+=Object.keys(o.mrt?.history||{}).length;s+=Object.keys(o.legal?.folders||{}).length;
+s+=Object.keys(o.requests||o.access_requests||{}).length;return s;}
+function maybe(v){if(typeof v!=="string")return v;const t=v.trim();
+if((t[0]==="{"&&t.endsWith("}"))||(t[0]==="["&&t.endsWith("]"))){try{return JSON.parse(t);}catch{return v;}}return v;}
 function collect(v,path,out,d){d=d||0;if(d>6)return;const p=maybe(v);
 if(isEnc(p)){out.enc.push({path,pkg:p});return;}
 if(isLocal(p))out.loc.push({path,obj:p,score:score(p)});
@@ -109,14 +118,21 @@ function dump(payload,out){
 if(Array.isArray(payload.indexedDB))payload.indexedDB.forEach(db=>(db.stores||[]).forEach(s=>(s.entries||[]).forEach(e=>collect(e.value,"idb:"+db.name+"/"+s.name+"/"+e.key,out))));
 if(isObj(payload.localStorage))Object.entries(payload.localStorage).forEach(([k,v])=>collect(v,"ls:"+k,out));}
 async function decrypt(cands,pw){const loc=[],warn=[];if(!cands.length)return{loc,warn};
-if(!pw){warn.push(cands.length+" paquet(s) chiffré(s) détecté(s) — mot de passe source non fourni.");return{loc,warn};}
-for(const c of cands){try{const k=await dk(pw,c.pkg.salt,c.pkg.it);const o=JSON.parse(dec.decode(await dx(k,c.pkg.iv,c.pkg.ct)));const sub={loc:[],enc:[]};collect(o,c.path+".decrypt",sub);loc.push(...sub.loc);}catch(e){warn.push("Déchiffrement échoué "+c.path+" : "+e.message);}}
+if(!pw){warn.push(cands.length+" paquet(s) chiffré(s) — mot de passe source non fourni.");return{loc,warn};}
+for(const c of cands){try{const k=await dk(pw,c.pkg.salt,c.pkg.it);
+const o=JSON.parse(dec.decode(await dx(k,c.pkg.iv,c.pkg.ct)));
+const sub={loc:[],enc:[]};collect(o,c.path+".decrypt",sub);loc.push(...sub.loc);}
+catch(e){warn.push("Déchiffrement échoué "+c.path+" : "+e.message);}}
 return{loc,warn};}
 const uniq=a=>Array.from(new Set(a.filter(Boolean).map(String)));
 const sv=x=>!x?"":typeof x==="string"?x:String(x.id||x.model||x.name||x.plate||x.vin||"");
-function mArr(t,s,k){k=k||"id";if(!Array.isArray(s))return t||[];const m=new Map((Array.isArray(t)?t:[]).map(x=>[x?.[k]||JSON.stringify(x),x]));s.forEach(x=>{const i=x?.[k]||JSON.stringify(x);if(!m.has(i))m.set(i,x);});return Array.from(m.values());}
+function mArr(t,s,k){k=k||"id";if(!Array.isArray(s))return t||[];
+const m=new Map((Array.isArray(t)?t:[]).map(x=>[x?.[k]||JSON.stringify(x),x]));
+s.forEach(x=>{const i=x?.[k]||JSON.stringify(x);if(!m.has(i))m.set(i,x);});return Array.from(m.values());}
 const mMap=(t,s)=>Object.assign({},t||{},s||{});
-function mSet(t,s){const o=Object.assign({},t||{});if(!isObj(s))return o;for(const[k,v]of Object.entries(s)){if(k==="bg"&&isObj(v))o.bg=Object.assign({},o.bg||{},v);else if(isObj(v)&&isObj(o[k]))o[k]=mSet(o[k],v);else o[k]=v;}return o;}
+function mSet(t,s){const o=Object.assign({},t||{});if(!isObj(s))return o;
+for(const[k,v]of Object.entries(s)){if(k==="bg"&&isObj(v))o.bg=Object.assign({},o.bg||{},v);
+else if(isObj(v)&&isObj(o[k]))o[k]=mSet(o[k],v);else o[k]=v;}return o;}
 function merge(T,s){if(!isObj(s))return T;
 T.version=Math.max(+(T.version||0),+(s.version||0));
 const R=s.ref||s.reference;
@@ -129,8 +145,14 @@ if(s.settings)T.settings=mSet(T.settings,s.settings);
 if(Array.isArray(s.suivi))T.suivi=uniq([...(T.suivi||[]).map(sv),...s.suivi.map(sv)]).slice(0,20);
 ["notifs","audit","bugs"].forEach(k=>{if(Array.isArray(s[k]))T[k]=mArr(T[k]||[],s[k]).slice(0,400);});
 if(s.devices)T.devices=mMap(T.devices,s.devices);
-if(s.requests)T.requests=mMap(T.requests,s.requests);
-if(s.access_requests)T.requests=mMap(T.requests,s.access_requests);
+if(s.tiers)T.tiers=mMap(T.tiers,s.tiers);
+const rq=s.requests||s.access_requests;
+if(rq){T.requests=mMap(T.requests,rq);
+Object.values(rq).forEach(r=>{const id=r.id;if(!id)return;
+if(!T.requests[id])T.requests[id]={id,device:r.device||r.device_id||"mig-"+id,name:r.name||r.requester_name||"Tiers",reason:r.reason||"",status:r.status||"pending",created:r.created||now(),updated:now()};
+const dev=T.requests[id].device;
+if(!T.tiers[dev])T.tiers[dev]={id:dev,name:T.requests[id].name,device:dev,trusted:false,auto:false,note:"Importé par migration",firstSeen:T.requests[id].created,lastSeen:now(),count:1,status:T.requests[id].status};
+if(!T.devices[dev])T.devices[dev]={id:dev,name:T.requests[id].name,status:T.requests[id].status,created:T.requests[id].created};});}
 if(s.elm?.groups)T.elm=s.elm;else if(s.elm_profiles?.groups)T.elm=s.elm_profiles;
 return T;}
 function enforce(L){const b=blank();
@@ -138,18 +160,29 @@ L.ref=L.ref?.brands?.length?L.ref:b.ref;L.vehicles=L.vehicles||{};
 L.mrt=Object.assign({},b.mrt,L.mrt||{});L.mrt.history=L.mrt.history||{};L.mrt.views=L.mrt.views||[];
 L.legal=Object.assign({},b.legal,L.legal||{});L.legal.folders=L.legal.folders||{};
 ["notifs","audit","bugs","suivi"].forEach(k=>{if(!Array.isArray(L[k]))L[k]=[];});
-L.suivi=uniq(L.suivi.map(sv)).slice(0,20);L.devices=L.devices||{};L.requests=L.requests||{};
-L.settings=Object.assign({},b.settings,L.settings||{});L.settings.bg=Object.assign({},b.settings.bg,L.settings.bg||{});
+L.suivi=uniq(L.suivi.map(sv)).slice(0,20);
+L.devices=L.devices||{};L.requests=L.requests||{};L.tiers=L.tiers||{};
+L.pipe=Object.assign({},b.pipe,L.pipe||{});
+if(!Array.isArray(L.pipe.queue))L.pipe.queue=[];
+if(!L.pipe.delivered||typeof L.pipe.delivered!=="object")L.pipe.delivered={};
+if(!L.pipe.acked||typeof L.pipe.acked!=="object")L.pipe.acked={};
+Object.values(L.requests).forEach(r=>{if(r.status==="pending"&&!L.pipe.acked[r.id]&&!L.pipe.queue.includes(r.id))L.pipe.queue.push(r.id);});
+L.settings=Object.assign({},b.settings,L.settings||{});
+L.settings.bg=Object.assign({},b.settings.bg,L.settings.bg||{});
 L.settings.code="Kevin83600";L.settings.migrated=true;return L;}
 async function loadCur(pw){const c=await ig("kv","enc");
-if(c?.on){if(!pw)throw new Error("Coffre ByKevin chiffré : saisissez le PIN.");const p=await ig("secure","local");if(!p)throw new Error("Coffre vide.");
+if(c?.on){if(!pw)throw new Error("Coffre ByKevin chiffré : saisissez le PIN.");
+const p=await ig("secure","local");if(!p)throw new Error("Coffre vide.");
 const k=await dk(pw,c.salt,c.it);return{L:JSON.parse(dec.decode(await dx(k,p.iv,p.ct))),c};}
 const p=await ig("kv","plain");return{L:p?JSON.parse(p):blank(),c:null};}
 async function save(L,pw,c,snap){const clean=enforce(L);
-if(snap){try{const cur=await loadCur(pw);await isx("kv","rollback",JSON.stringify(cur.L));await isx("kv","rollback_meta",JSON.stringify({at:now(),enc:!!c}));}catch(e){console.warn("snapshot:",e);}}
+if(snap){try{const cur=await loadCur(pw);await isx("kv","rollback",JSON.stringify(cur.L));
+await isx("kv","rollback_meta",JSON.stringify({at:now(),enc:!!c}));}catch(e){console.warn("snapshot:",e);}}
 const j=JSON.stringify(clean);
-if(c?.on){if(!pw)throw new Error("PIN requis pour réécrire le coffre.");const k=await dk(pw,c.salt,c.it);const iv=crypto.getRandomValues(new Uint8Array(12));
-const ct=await crypto.subtle.encrypt({name:"AES-GCM",iv},k,enc.encode(j));await isx("secure","local",{iv:b64(iv),ct:b64(ct)});await idx("kv","plain");}
+if(c?.on){if(!pw)throw new Error("PIN requis pour réécrire le coffre.");
+const k=await dk(pw,c.salt,c.it);const iv=crypto.getRandomValues(new Uint8Array(12));
+const ct=await crypto.subtle.encrypt({name:"AES-GCM",iv},k,enc.encode(j));
+await isx("secure","local",{iv:b64(iv),ct:b64(ct)});await idx("kv","plain");}
 else{await isx("kv","plain",j);await idx("secure","local");}
 return clean;}
 async function build(){const f=$("#src").files?.[0];if(!f)throw new Error("Sélectionnez un fichier d'export JSON.");
@@ -157,7 +190,8 @@ const payload=JSON.parse(await f.text());const out={loc:[],enc:[]};collect(paylo
 const d=await decrypt(out.enc,$("#srcPw").value||"");out.loc.push(...d.loc);
 const warn=d.warn.slice();if(!out.loc.length)warn.push("Aucune base locale exploitable dans ce fichier.");
 out.loc.sort((a,b)=>b.score-a.score);return{out,warn};}
-const sum=l=>l.map((c,i)=>{const o=c.obj;return "#"+(i+1)+"  score="+c.score+"  "+c.path+"\n   véhicules="+Object.keys(o.vehicles||o.workshop?.vehicles||{}).length+"  pré-visites="+Object.keys(o.mrt?.history||{}).length+"  dossiers="+Object.keys(o.legal?.folders||{}).length+"\n   suivi="+(Array.isArray(o.suivi)?o.suivi.length:0)+"  demandes="+Object.keys(o.requests||o.access_requests||{}).length+"  appareils="+Object.keys(o.devices||{}).length;}).join("\n\n");
+const sum=l=>l.map((c,i)=>{const o=c.obj;
+return "#"+(i+1)+"  score="+c.score+"  "+c.path+"\n   véhicules="+Object.keys(o.vehicles||o.workshop?.vehicles||{}).length+"  pré-visites="+Object.keys(o.mrt?.history||{}).length+"  dossiers="+Object.keys(o.legal?.folders||{}).length+"\n   demandes="+Object.keys(o.requests||o.access_requests||{}).length+"  tiers="+Object.keys(o.tiers||{}).length+"  suivi="+(Array.isArray(o.suivi)?o.suivi.length:0);}).join("\n\n");
 $("#an").onclick=async()=>{st("wa","Analyse…");rp("Analyse en cours…");
 try{const{out,warn}=await build();$("#cn").textContent=out.loc.length+" candidate(s)";$("#wn").textContent=warn.length+" avertissement(s)";
 rp(["ANALYSE TERMINÉE","","CANDIDATES DÉTECTÉES :",sum(out.loc)||"aucune","","AVERTISSEMENTS :",warn.length?warn.join("\n"):"aucun"].join("\n"));
@@ -165,14 +199,22 @@ st(out.loc.length?"ok":"ko",out.loc.length?"Analyse OK":"Aucune donnée");}catch
 $("#im").onclick=async()=>{st("wa","Import…");rp("Fusion en cours…");
 try{const pw=$("#dstPw").value||"";const{L:cur,c}=await loadCur(pw);const{out,warn}=await build();
 if(!out.loc.length){rp("Import annulé : aucune base exploitable.\n\n"+warn.join("\n"));st("ko","Rien à importer");return;}
-const M=enforce(JSON.parse(JSON.stringify(cur)));out.loc.forEach(x=>merge(M,x.obj));await save(M,pw,c,true);
-rp(["FUSION RÉUSSIE","","véhicules      : "+Object.keys(M.vehicles).length,"pré-visites    : "+Object.keys(M.mrt.history).length,"dossiers       : "+Object.keys(M.legal.folders).length,"suivi (≤20)    : "+M.suivi.length,"demandes       : "+Object.keys(M.requests).length,"appareils      : "+Object.keys(M.devices).length,"notifications  : "+M.notifs.length,"audit          : "+M.audit.length,"","AVERTISSEMENTS :",warn.length?warn.join("\n"):"aucun","","Point de restauration enregistré."].join("\n"));
+const M=enforce(JSON.parse(JSON.stringify(cur)));out.loc.forEach(x=>merge(M,x.obj));enforce(M);
+await save(M,pw,c,true);
+rp(["FUSION RÉUSSIE","","véhicules      : "+Object.keys(M.vehicles).length,"pré-visites    : "+Object.keys(M.mrt.history).length,
+"dossiers       : "+Object.keys(M.legal.folders).length,"demandes       : "+Object.keys(M.requests).length,
+"file persist.  : "+M.pipe.queue.length,"tiers          : "+Object.keys(M.tiers).length,
+"suivi (≤20)    : "+M.suivi.length,"","AVERTISSEMENTS :",warn.length?warn.join("\n"):"aucun","",
+"Point de restauration enregistré.","Les demandes en attente seront rejouées à la connexion administrateur."].join("\n"));
 st("ok","Import OK");}catch(e){rp("Erreur : "+e.message);st("ko","Erreur");}};
-$("#ex").onclick=async()=>{try{const{L}=await loadCur($("#dstPw").value||"");const b=new Blob([JSON.stringify(L,null,2)],{type:"application/json"});
-const u=URL.createObjectURL(b),a=document.createElement("a");a.href=u;a.download="bykevin-base-"+new Date().toISOString().slice(0,10)+".json";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),2500);
+$("#ex").onclick=async()=>{try{const{L}=await loadCur($("#dstPw").value||"");
+const b=new Blob([JSON.stringify(L,null,2)],{type:"application/json"});
+const u=URL.createObjectURL(b),a=document.createElement("a");a.href=u;a.download="bykevin-base-"+new Date().toISOString().slice(0,10)+".json";
+document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),2500);
 st("ok","Export OK");rp("Base actuelle exportée.");}catch(e){st("ko","Erreur");rp("Erreur : "+e.message);}};
 $("#rb").onclick=async()=>{try{const raw=await ig("kv","rollback");if(!raw)throw new Error("Aucun point de restauration disponible.");
-const pw=$("#dstPw").value||"";const c=await ig("kv","enc");await save(JSON.parse(raw),pw,c,false);st("ok","Restauration OK");rp("Point de restauration appliqué.");}catch(e){st("ko","Erreur");rp("Erreur : "+e.message);}};
+const pw=$("#dstPw").value||"";const c=await ig("kv","enc");await save(JSON.parse(raw),pw,c,false);
+st("ok","Restauration OK");rp("Point de restauration appliqué.");}catch(e){st("ko","Erreur");rp("Erreur : "+e.message);}};
 const ret=new URLSearchParams(location.search).get("return");
 $("#bk").onclick=()=>{location.href=ret||"./index.html";};
 })();
