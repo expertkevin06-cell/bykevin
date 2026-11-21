@@ -1,4 +1,4 @@
-const VERSION = "bykevin-v1.0.0";
+const VERSION = "bykevin-v1.0.1";
 const PAGES_CACHE = VERSION + "-pages";
 const STATIC_CACHE = VERSION + "-static";
 
