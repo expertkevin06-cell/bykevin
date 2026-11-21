@@ -3,220 +3,97 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<meta name="theme-color" content="#0B1219"/>
-<title>ByKevin — Migration</title>
+<title>ByKevin — Générateur d'icônes</title>
 <style>
-:root{--ink-900:#070B10;--ink-700:#111C25;--ink-600:#18262F;--ink-500:#22333D;--soft:rgba(143,163,176,.14);--amber:#FFB020;--cyan:#22D3EE;--red:#FF4D4D;--green:#3DDC84;--text:#EAF2F7;--muted:#8FA3B0;--dim:#5F7482;--mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace}
 *{box-sizing:border-box}
-body{margin:0;background:var(--ink-900);color:var(--text);font-family:Inter,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;padding:22px 16px 60px;max-width:1000px;margin:0 auto;line-height:1.5}
-body::before{content:"";position:fixed;inset:0;z-index:-1;background:radial-gradient(700px 420px at 10% -8%,rgba(255,176,32,.16),transparent 62%),radial-gradient(620px 460px at 92% 106%,rgba(167,139,250,.14),transparent 64%),linear-gradient(rgba(255,176,32,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,176,32,.04) 1px,transparent 1px);background-size:auto,auto,46px 46px,46px 46px}
-*{scrollbar-width:thin;scrollbar-color:#C97A0A rgba(7,11,16,.6)}
-::-webkit-scrollbar{width:10px;height:10px}
-::-webkit-scrollbar-track{background:rgba(7,11,16,.7)}
-::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--amber),#C97A0A);border:2px solid rgba(7,11,16,.9)}
-h1{font-size:1.35rem;margin:0 0 4px;letter-spacing:-.02em}
-h1 i{font-style:normal;color:var(--amber)}
-.lead{color:var(--muted);font-size:.88rem;margin-bottom:20px}
-.mod{position:relative;background:linear-gradient(180deg,rgba(24,38,47,.88),rgba(11,18,25,.92));border:1px solid var(--soft);border-radius:4px;padding:18px;margin-bottom:16px}
-.mod::before,.mod::after{content:"";position:absolute;width:9px;height:9px;border:1px solid var(--amber);opacity:.5}
-.mod::before{top:-1px;left:-1px;border-right:0;border-bottom:0}
-.mod::after{bottom:-1px;right:-1px;border-left:0;border-top:0}
-h2{font-size:1rem;margin:0 0 14px;padding-bottom:10px;border-bottom:1px solid var(--soft);display:flex;gap:10px;align-items:center}
-h2 em{font-style:normal;font-family:var(--mono);font-size:.64rem;color:var(--amber);border:1px solid currentColor;padding:3px 6px}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
-label{display:block;font-family:var(--mono);font-size:.62rem;letter-spacing:.13em;text-transform:uppercase;color:var(--dim);margin-bottom:6px}
-input{width:100%;padding:11px 12px;background:rgba(7,11,16,.82);border:1px solid var(--ink-500);border-radius:4px;color:var(--text);font-size:.92rem;outline:none}
-input:focus{border-color:var(--amber);box-shadow:0 0 0 3px rgba(255,176,32,.12)}
-.row{display:flex;gap:9px;flex-wrap:wrap;margin-top:13px}
-.btn{border:0;border-radius:4px;padding:11px 15px;font-family:var(--mono);font-size:.7rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:.16s}
-.btn:active{transform:scale(.97)}
-.b-a{background:linear-gradient(135deg,#FFB020,#C97A0A);color:#160D00}
-.b-g{background:linear-gradient(135deg,#3DDC84,#15803D);color:#04170C}
-.b-r{background:linear-gradient(135deg,#FF4D4D,#991B1B);color:#fff}
-.b-o{background:rgba(24,38,47,.7);border:1px solid var(--ink-500);color:var(--muted)}
-.b-o:hover{border-color:var(--amber);color:var(--text)}
-pre{background:#050A0E;border:1px solid var(--soft);border-radius:4px;padding:14px;min-height:190px;max-height:440px;overflow:auto;white-space:pre-wrap;font-family:var(--mono);font-size:.76rem;line-height:1.65;color:#9FE8C4}
-.pill{display:inline-block;font-family:var(--mono);font-size:.64rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:5px 9px;border:1px solid var(--soft);background:rgba(7,11,16,.6);color:var(--muted);border-radius:2px}
-.pill.ok{color:#A7F3C8;border-color:rgba(61,220,132,.45);background:rgba(61,220,132,.12)}
-.pill.ko{color:#FFB3B3;border-color:rgba(255,77,77,.45);background:rgba(255,77,77,.12)}
-.pill.wa{color:#FFD98A;border-color:rgba(255,176,32,.45);background:rgba(255,176,32,.12)}
-.note{color:var(--muted);font-size:.85rem}
+body{margin:0;background:#070B10;color:#EAF2F7;font-family:Inter,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;padding:26px 18px 60px;max-width:820px;margin:0 auto;line-height:1.6}
+body::before{content:"";position:fixed;inset:0;z-index:-1;background:radial-gradient(700px 420px at 12% -8%,rgba(255,176,32,.18),transparent 62%),radial-gradient(620px 460px at 92% 106%,rgba(34,211,238,.14),transparent 64%),linear-gradient(rgba(255,176,32,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(255,176,32,.045) 1px,transparent 1px);background-size:auto,auto,46px 46px,46px 46px}
+h1{font-size:1.35rem;margin:0 0 6px;letter-spacing:-.02em}
+h1 i{font-style:normal;color:#FFB020}
+.card{background:linear-gradient(180deg,rgba(24,38,47,.9),rgba(11,18,25,.94));border:1px solid rgba(143,163,176,.14);border-radius:4px;padding:20px;margin:16px 0;position:relative}
+.card::before,.card::after{content:"";position:absolute;width:9px;height:9px;border:1px solid #FFB020;opacity:.5}
+.card::before{top:-1px;left:-1px;border-right:0;border-bottom:0}
+.card::after{bottom:-1px;right:-1px;border-left:0;border-top:0}
+ol{margin:10px 0 0 20px;padding:0;color:#8FA3B0;font-size:.9rem}
+li{margin:6px 0}
+code{background:#050A0E;padding:2px 7px;border-radius:3px;color:#7DD3FC;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.86em}
+button{background:linear-gradient(135deg,#FFB020,#C97A0A);color:#160D00;border:0;border-radius:4px;padding:14px 20px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.76rem;font-weight:800;letter-spacing:.11em;text-transform:uppercase;cursor:pointer;box-shadow:0 6px 22px rgba(255,176,32,.26);margin-top:14px}
+button:hover{transform:translateY(-1px);box-shadow:0 8px 30px rgba(255,176,32,.42)}
+button:active{transform:none}
+.warn{color:#FFD98A;font-size:.85rem;margin-top:12px}
+#log{background:#050A0E;border:1px solid rgba(143,163,176,.14);border-radius:4px;padding:14px;margin-top:16px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.78rem;color:#9FE8C4;white-space:pre-wrap;min-height:130px;max-height:280px;overflow:auto}
+#preview{display:flex;gap:14px;flex-wrap:wrap;margin-top:16px}
+#preview figure{margin:0;text-align:center}
+#preview canvas{border:1px solid rgba(143,163,176,.18);border-radius:4px;display:block}
+#preview figcaption{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.6rem;color:#5F7482;margin-top:6px;letter-spacing:.1em;text-transform:uppercase}
 </style>
 </head>
 <body>
-<h1>🧳 MIGRATION <i>BYKEVIN</i></h1>
-<p class="lead">Fusion des bases de <b>appli-aide-technique</b>, <b>autodiag-formation-auto</b>, <b>kevfusion2026</b> et <b>auto-legal-by-kevin</b>. Les demandes d'accès importées sont réinjectées dans la file persistante.</p>
-
-<div class="mod">
-  <h2><em>01</em>Source</h2>
-  <div class="grid">
-    <div><label for="src">Fichier d'export JSON</label><input id="src" type="file" accept=".json,application/json"/></div>
-    <div><label for="srcPw">Mot de passe source (si chiffré)</label><input id="srcPw" type="password" autocomplete="new-password" placeholder="Vide si non chiffré"/></div>
-    <div><label for="dstPw">PIN du coffre ByKevin</label><input id="dstPw" type="password" autocomplete="new-password" placeholder="Requis si coffre chiffré"/></div>
-  </div>
-  <div class="row">
-    <button id="an" class="btn b-a">Analyser sans importer</button>
-    <button id="im" class="btn b-g">Importer et fusionner</button>
-    <button id="ex" class="btn b-o">Exporter la base actuelle</button>
-    <button id="rb" class="btn b-r">Restaurer le point de sauvegarde</button>
-  </div>
+<h1>🎨 GÉNÉRATEUR D'ICÔNES <i>BYKEVIN</i></h1>
+<p style="color:#8FA3B0;font-size:.9rem">Exécution intégrale dans le navigateur — aucun serveur, aucun terminal, aucune dépendance.</p>
+<div class="card">
+  <ol>
+    <li>Cliquez sur le bouton ci-dessous.</li>
+    <li>Six fichiers sont téléchargés dans votre dossier de téléchargements.</li>
+    <li>Placez-les dans un dossier nommé exactement <code>icons</code>.</li>
+    <li>Sur GitHub : <b>Add file → Upload files</b>, glissez le dossier <code>icons</code> entier, puis <b>Commit</b>.</li>
+  </ol>
+  <p class="warn">⚠️ Autorisez les téléchargements multiples si le navigateur le demande.</p>
+  <button id="go">Générer les 6 icônes</button>
+  <div id="preview"></div>
+  <div id="log">En attente…</div>
 </div>
-
-<div class="mod">
-  <h2><em>02</em>Rapport</h2>
-  <div class="row" style="margin-top:0"><span id="st" class="pill">En attente</span><span id="cn" class="pill">0 candidate</span><span id="wn" class="pill wa">0 avertissement</span></div>
-  <pre id="rp" style="margin-top:13px">Aucune analyse effectuée.</pre>
-</div>
-
-<div class="mod">
-  <h2><em>03</em>Retour</h2>
-  <p class="note">Après import, revenez au poste et rechargez-le. Les demandes en attente seront rejouées à la connexion administrateur.</p>
-  <div class="row"><button id="bk" class="btn b-o">Retourner à ByKevin</button></div>
-</div>
-
 <script>
 (function(){
 "use strict";
-const DBN="bykevin-v3";
-const enc=new TextEncoder(),dec=new TextDecoder();
-const $=s=>document.querySelector(s);
-const now=()=>Date.now();
-const b64=b=>{const u=b instanceof Uint8Array?b:new Uint8Array(b);let s="";for(let i=0;i<u.length;i+=0x8000)s+=String.fromCharCode.apply(null,u.subarray(i,i+0x8000));return btoa(s);};
-const unb=s=>{const b=atob(s),u=new Uint8Array(b.length);for(let i=0;i<b.length;i++)u[i]=b.charCodeAt(i);return u;};
-const rp=t=>$("#rp").textContent=t;
-const st=(c,t)=>{const e=$("#st");e.className="pill "+c;e.textContent=t;};
-async function dk(pw,salt,it){const km=await crypto.subtle.importKey("raw",enc.encode(pw),"PBKDF2",false,["deriveKey"]);
-return crypto.subtle.deriveKey({name:"PBKDF2",salt:unb(salt),iterations:it||120000,hash:"SHA-256"},km,{name:"AES-GCM",length:256},true,["encrypt","decrypt"]);}
-async function dx(k,iv,ct){return crypto.subtle.decrypt({name:"AES-GCM",iv:unb(iv)},k,unb(ct));}
-let P=null;
-function oidb(){if(P)return P;P=new Promise((res,rej)=>{const r=indexedDB.open(DBN,1);
-r.onupgradeneeded=()=>{const d=r.result;["kv","secure","queue"].forEach(s=>{if(!d.objectStoreNames.contains(s))d.createObjectStore(s);});};
-r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);});return P;}
-async function ig(s,k){const d=await oidb();return new Promise((res,rej)=>{const t=d.transaction(s,"readonly"),r=t.objectStore(s).get(k);r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);});}
-async function isx(s,k,v){const d=await oidb();return new Promise((res,rej)=>{const t=d.transaction(s,"readwrite"),r=t.objectStore(s).put(v,k);r.onsuccess=()=>res(true);r.onerror=()=>rej(r.error);});}
-async function idx(s,k){const d=await oidb();return new Promise((res,rej)=>{const t=d.transaction(s,"readwrite"),r=t.objectStore(s).delete(k);r.onsuccess=()=>res(true);r.onerror=()=>rej(r.error);});}
-const blank=()=>({version:3,ref:{brands:[],models:[],engines:[],faults:[]},vehicles:{},mrt:{history:{},views:[]},legal:{folders:{}},
-notifs:[],audit:[],bugs:[],devices:{},requests:{},tiers:{},pipe:{queue:[],delivered:{},acked:{}},suivi:[],elm:null,
-settings:{bg:{on:false,type:"image",url:"",op:.8,blur:0,scrim:.45,fit:"cover",guests:true},code:"Kevin83600",api:"",sound:true,poll:10,autoTrusted:true,migrated:true}});
-const isObj=v=>v&&typeof v==="object"&&!Array.isArray(v);
-const isEnc=o=>isObj(o)&&o.v===1&&o.alg==="AES-GCM"&&o.salt&&o.iv&&o.ct;
-const KEYS=["ref","reference","vehicles","workshop","mrt","legal","suivi","requests","access_requests","devices","tiers","pipe","notifs","audit","bugs","elm","elm_profiles","settings"];
-const isLocal=o=>isObj(o)&&KEYS.some(k=>Object.prototype.hasOwnProperty.call(o,k));
-function score(o){if(!isLocal(o))return 0;let s=0;
-if(o.ref||o.reference)s+=20;if(o.vehicles||o.workshop)s+=28;if(o.mrt)s+=14;if(o.legal)s+=14;
-if(o.requests||o.access_requests)s+=16;if(o.tiers)s+=10;if(o.settings)s+=8;
-s+=Object.keys(o.vehicles||o.workshop?.vehicles||{}).length;
-s+=Object.keys(o.mrt?.history||{}).length;s+=Object.keys(o.legal?.folders||{}).length;
-s+=Object.keys(o.requests||o.access_requests||{}).length;return s;}
-function maybe(v){if(typeof v!=="string")return v;const t=v.trim();
-if((t[0]==="{"&&t.endsWith("}"))||(t[0]==="["&&t.endsWith("]"))){try{return JSON.parse(t);}catch{return v;}}return v;}
-function collect(v,path,out,d){d=d||0;if(d>6)return;const p=maybe(v);
-if(isEnc(p)){out.enc.push({path,pkg:p});return;}
-if(isLocal(p))out.loc.push({path,obj:p,score:score(p)});
-if(isObj(p))["data","state","local","payload","value"].forEach(k=>{if(Object.prototype.hasOwnProperty.call(p,k))collect(p[k],path+"."+k,out,d+1);});}
-function dump(payload,out){
-if(Array.isArray(payload.indexedDB))payload.indexedDB.forEach(db=>(db.stores||[]).forEach(s=>(s.entries||[]).forEach(e=>collect(e.value,"idb:"+db.name+"/"+s.name+"/"+e.key,out))));
-if(isObj(payload.localStorage))Object.entries(payload.localStorage).forEach(([k,v])=>collect(v,"ls:"+k,out));}
-async function decrypt(cands,pw){const loc=[],warn=[];if(!cands.length)return{loc,warn};
-if(!pw){warn.push(cands.length+" paquet(s) chiffré(s) — mot de passe source non fourni.");return{loc,warn};}
-for(const c of cands){try{const k=await dk(pw,c.pkg.salt,c.pkg.it);
-const o=JSON.parse(dec.decode(await dx(k,c.pkg.iv,c.pkg.ct)));
-const sub={loc:[],enc:[]};collect(o,c.path+".decrypt",sub);loc.push(...sub.loc);}
-catch(e){warn.push("Déchiffrement échoué "+c.path+" : "+e.message);}}
-return{loc,warn};}
-const uniq=a=>Array.from(new Set(a.filter(Boolean).map(String)));
-const sv=x=>!x?"":typeof x==="string"?x:String(x.id||x.model||x.name||x.plate||x.vin||"");
-function mArr(t,s,k){k=k||"id";if(!Array.isArray(s))return t||[];
-const m=new Map((Array.isArray(t)?t:[]).map(x=>[x?.[k]||JSON.stringify(x),x]));
-s.forEach(x=>{const i=x?.[k]||JSON.stringify(x);if(!m.has(i))m.set(i,x);});return Array.from(m.values());}
-const mMap=(t,s)=>Object.assign({},t||{},s||{});
-function mSet(t,s){const o=Object.assign({},t||{});if(!isObj(s))return o;
-for(const[k,v]of Object.entries(s)){if(k==="bg"&&isObj(v))o.bg=Object.assign({},o.bg||{},v);
-else if(isObj(v)&&isObj(o[k]))o[k]=mSet(o[k],v);else o[k]=v;}return o;}
-function merge(T,s){if(!isObj(s))return T;
-T.version=Math.max(+(T.version||0),+(s.version||0));
-const R=s.ref||s.reference;
-if(R){T.ref=T.ref||{brands:[],models:[],engines:[],faults:[]};["brands","models","engines","faults"].forEach(k=>{T.ref[k]=mArr(T.ref[k],R[k]);});}
-if(s.vehicles)T.vehicles=mMap(T.vehicles,s.vehicles);
-if(s.workshop?.vehicles)T.vehicles=mMap(T.vehicles,s.workshop.vehicles);
-if(s.mrt?.history){T.mrt=T.mrt||{history:{},views:[]};T.mrt.history=mMap(T.mrt.history,s.mrt.history);}
-if(s.legal?.folders){T.legal=T.legal||{folders:{}};T.legal.folders=mMap(T.legal.folders,s.legal.folders);}
-if(s.settings)T.settings=mSet(T.settings,s.settings);
-if(Array.isArray(s.suivi))T.suivi=uniq([...(T.suivi||[]).map(sv),...s.suivi.map(sv)]).slice(0,20);
-["notifs","audit","bugs"].forEach(k=>{if(Array.isArray(s[k]))T[k]=mArr(T[k]||[],s[k]).slice(0,400);});
-if(s.devices)T.devices=mMap(T.devices,s.devices);
-if(s.tiers)T.tiers=mMap(T.tiers,s.tiers);
-const rq=s.requests||s.access_requests;
-if(rq){T.requests=mMap(T.requests,rq);
-Object.values(rq).forEach(r=>{const id=r.id;if(!id)return;
-if(!T.requests[id])T.requests[id]={id,device:r.device||r.device_id||"mig-"+id,name:r.name||r.requester_name||"Tiers",reason:r.reason||"",status:r.status||"pending",created:r.created||now(),updated:now()};
-const dev=T.requests[id].device;
-if(!T.tiers[dev])T.tiers[dev]={id:dev,name:T.requests[id].name,device:dev,trusted:false,auto:false,note:"Importé par migration",firstSeen:T.requests[id].created,lastSeen:now(),count:1,status:T.requests[id].status};
-if(!T.devices[dev])T.devices[dev]={id:dev,name:T.requests[id].name,status:T.requests[id].status,created:T.requests[id].created};});}
-if(s.elm?.groups)T.elm=s.elm;else if(s.elm_profiles?.groups)T.elm=s.elm_profiles;
-return T;}
-function enforce(L){const b=blank();
-L.ref=L.ref?.brands?.length?L.ref:b.ref;L.vehicles=L.vehicles||{};
-L.mrt=Object.assign({},b.mrt,L.mrt||{});L.mrt.history=L.mrt.history||{};L.mrt.views=L.mrt.views||[];
-L.legal=Object.assign({},b.legal,L.legal||{});L.legal.folders=L.legal.folders||{};
-["notifs","audit","bugs","suivi"].forEach(k=>{if(!Array.isArray(L[k]))L[k]=[];});
-L.suivi=uniq(L.suivi.map(sv)).slice(0,20);
-L.devices=L.devices||{};L.requests=L.requests||{};L.tiers=L.tiers||{};
-L.pipe=Object.assign({},b.pipe,L.pipe||{});
-if(!Array.isArray(L.pipe.queue))L.pipe.queue=[];
-if(!L.pipe.delivered||typeof L.pipe.delivered!=="object")L.pipe.delivered={};
-if(!L.pipe.acked||typeof L.pipe.acked!=="object")L.pipe.acked={};
-Object.values(L.requests).forEach(r=>{if(r.status==="pending"&&!L.pipe.acked[r.id]&&!L.pipe.queue.includes(r.id))L.pipe.queue.push(r.id);});
-L.settings=Object.assign({},b.settings,L.settings||{});
-L.settings.bg=Object.assign({},b.settings.bg,L.settings.bg||{});
-L.settings.code="Kevin83600";L.settings.migrated=true;return L;}
-async function loadCur(pw){const c=await ig("kv","enc");
-if(c?.on){if(!pw)throw new Error("Coffre ByKevin chiffré : saisissez le PIN.");
-const p=await ig("secure","local");if(!p)throw new Error("Coffre vide.");
-const k=await dk(pw,c.salt,c.it);return{L:JSON.parse(dec.decode(await dx(k,p.iv,p.ct))),c};}
-const p=await ig("kv","plain");return{L:p?JSON.parse(p):blank(),c:null};}
-async function save(L,pw,c,snap){const clean=enforce(L);
-if(snap){try{const cur=await loadCur(pw);await isx("kv","rollback",JSON.stringify(cur.L));
-await isx("kv","rollback_meta",JSON.stringify({at:now(),enc:!!c}));}catch(e){console.warn("snapshot:",e);}}
-const j=JSON.stringify(clean);
-if(c?.on){if(!pw)throw new Error("PIN requis pour réécrire le coffre.");
-const k=await dk(pw,c.salt,c.it);const iv=crypto.getRandomValues(new Uint8Array(12));
-const ct=await crypto.subtle.encrypt({name:"AES-GCM",iv},k,enc.encode(j));
-await isx("secure","local",{iv:b64(iv),ct:b64(ct)});await idx("kv","plain");}
-else{await isx("kv","plain",j);await idx("secure","local");}
-return clean;}
-async function build(){const f=$("#src").files?.[0];if(!f)throw new Error("Sélectionnez un fichier d'export JSON.");
-const payload=JSON.parse(await f.text());const out={loc:[],enc:[]};collect(payload,"root",out);dump(payload,out);
-const d=await decrypt(out.enc,$("#srcPw").value||"");out.loc.push(...d.loc);
-const warn=d.warn.slice();if(!out.loc.length)warn.push("Aucune base locale exploitable dans ce fichier.");
-out.loc.sort((a,b)=>b.score-a.score);return{out,warn};}
-const sum=l=>l.map((c,i)=>{const o=c.obj;
-return "#"+(i+1)+"  score="+c.score+"  "+c.path+"\n   véhicules="+Object.keys(o.vehicles||o.workshop?.vehicles||{}).length+"  pré-visites="+Object.keys(o.mrt?.history||{}).length+"  dossiers="+Object.keys(o.legal?.folders||{}).length+"\n   demandes="+Object.keys(o.requests||o.access_requests||{}).length+"  tiers="+Object.keys(o.tiers||{}).length+"  suivi="+(Array.isArray(o.suivi)?o.suivi.length:0);}).join("\n\n");
-$("#an").onclick=async()=>{st("wa","Analyse…");rp("Analyse en cours…");
-try{const{out,warn}=await build();$("#cn").textContent=out.loc.length+" candidate(s)";$("#wn").textContent=warn.length+" avertissement(s)";
-rp(["ANALYSE TERMINÉE","","CANDIDATES DÉTECTÉES :",sum(out.loc)||"aucune","","AVERTISSEMENTS :",warn.length?warn.join("\n"):"aucun"].join("\n"));
-st(out.loc.length?"ok":"ko",out.loc.length?"Analyse OK":"Aucune donnée");}catch(e){rp("Erreur : "+e.message);st("ko","Erreur");}};
-$("#im").onclick=async()=>{st("wa","Import…");rp("Fusion en cours…");
-try{const pw=$("#dstPw").value||"";const{L:cur,c}=await loadCur(pw);const{out,warn}=await build();
-if(!out.loc.length){rp("Import annulé : aucune base exploitable.\n\n"+warn.join("\n"));st("ko","Rien à importer");return;}
-const M=enforce(JSON.parse(JSON.stringify(cur)));out.loc.forEach(x=>merge(M,x.obj));enforce(M);
-await save(M,pw,c,true);
-rp(["FUSION RÉUSSIE","","véhicules      : "+Object.keys(M.vehicles).length,"pré-visites    : "+Object.keys(M.mrt.history).length,
-"dossiers       : "+Object.keys(M.legal.folders).length,"demandes       : "+Object.keys(M.requests).length,
-"file persist.  : "+M.pipe.queue.length,"tiers          : "+Object.keys(M.tiers).length,
-"suivi (≤20)    : "+M.suivi.length,"","AVERTISSEMENTS :",warn.length?warn.join("\n"):"aucun","",
-"Point de restauration enregistré.","Les demandes en attente seront rejouées à la connexion administrateur."].join("\n"));
-st("ok","Import OK");}catch(e){rp("Erreur : "+e.message);st("ko","Erreur");}};
-$("#ex").onclick=async()=>{try{const{L}=await loadCur($("#dstPw").value||"");
-const b=new Blob([JSON.stringify(L,null,2)],{type:"application/json"});
-const u=URL.createObjectURL(b),a=document.createElement("a");a.href=u;a.download="bykevin-base-"+new Date().toISOString().slice(0,10)+".json";
-document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),2500);
-st("ok","Export OK");rp("Base actuelle exportée.");}catch(e){st("ko","Erreur");rp("Erreur : "+e.message);}};
-$("#rb").onclick=async()=>{try{const raw=await ig("kv","rollback");if(!raw)throw new Error("Aucun point de restauration disponible.");
-const pw=$("#dstPw").value||"";const c=await ig("kv","enc");await save(JSON.parse(raw),pw,c,false);
-st("ok","Restauration OK");rp("Point de restauration appliqué.");}catch(e){st("ko","Erreur");rp("Erreur : "+e.message);}};
-const ret=new URLSearchParams(location.search).get("return");
-$("#bk").onclick=()=>{location.href=ret||"./index.html";};
+const BG="#0B1219",AMBER="#FFB020",CYAN="#22D3EE",RED="#FF4D4D",LIGHT="#EAF2F7";
+function rr(x,px,py,w,h,r){x.beginPath();x.moveTo(px+r,py);x.arcTo(px+w,py,px+w,py+h,r);x.arcTo(px+w,py+h,px,py+h,r);x.arcTo(px,py+h,px,py,r);x.arcTo(px,py,px+w,py,r);x.closePath();}
+function draw(size,mask){
+const c=document.createElement("canvas");c.width=size;c.height=size;
+const x=c.getContext("2d");const S=size/512;const cx=size/2,cy=size/2;
+x.fillStyle=BG;if(mask){x.fillRect(0,0,size,size);}else{rr(x,0,0,size,size,96*S);x.fill();}
+const g=x.createRadialGradient(cx,cy*.7,10,cx,cy,size*.62);
+g.addColorStop(0,"rgba(255,176,32,.22)");g.addColorStop(1,"rgba(11,18,25,0)");
+x.fillStyle=g;if(mask){x.fillRect(0,0,size,size);}else{rr(x,0,0,size,size,96*S);x.fill();}
+const R=size*(mask?.245:.30);
+x.lineWidth=Math.max(2,10*S);x.strokeStyle="rgba(143,163,176,.22)";
+x.beginPath();x.arc(cx,cy,R,0,Math.PI*2);x.stroke();
+x.strokeStyle=CYAN;x.lineCap="round";x.lineWidth=Math.max(2.5,13*S);
+x.beginPath();x.arc(cx,cy,R,Math.PI*.82,Math.PI*1.62);x.stroke();
+x.strokeStyle=AMBER;x.beginPath();x.arc(cx,cy,R,Math.PI*1.66,Math.PI*2.18);x.stroke();
+x.strokeStyle="rgba(234,242,247,.42)";x.lineWidth=Math.max(1.4,6*S);
+for(let i=0;i<12;i++){const a=Math.PI*.82+i*(Math.PI*1.36/11);const r1=R-16*S,r2=R-6*S;
+x.beginPath();x.moveTo(cx+Math.cos(a)*r1,cy+Math.sin(a)*r1);x.lineTo(cx+Math.cos(a)*r2,cy+Math.sin(a)*r2);x.stroke();}
+const na=-Math.PI*.30;
+x.strokeStyle=RED;x.lineWidth=Math.max(2.6,15*S);x.lineCap="round";
+x.beginPath();x.moveTo(cx,cy);x.lineTo(cx+Math.cos(na)*R*.80,cy+Math.sin(na)*R*.80);x.stroke();
+x.fillStyle=AMBER;x.beginPath();x.arc(cx,cy,Math.max(4,21*S),0,Math.PI*2);x.fill();
+x.fillStyle=BG;x.beginPath();x.arc(cx,cy,Math.max(1.6,8*S),0,Math.PI*2);x.fill();
+x.fillStyle=LIGHT;x.font="900 "+Math.round(size*(mask?.088:.10))+"px Inter, Arial, sans-serif";
+x.textAlign="center";x.textBaseline="middle";
+x.fillText("BYKEVIN",cx,cy+R+size*(mask?.085:.10));
+return c;}
+function dl(blob,name){const u=URL.createObjectURL(blob);const a=document.createElement("a");
+a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),1600);}
+const toPng=c=>new Promise(r=>c.toBlob(b=>r(b),"image/png"));
+const wait=m=>new Promise(r=>setTimeout(r,m));
+const SVG='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="96" fill="#0B1219"/><circle cx="256" cy="238" r="150" fill="none" stroke="rgba(143,163,176,.22)" stroke-width="10"/><path d="M256 88a150 150 0 0 1 132 79" fill="none" stroke="#22D3EE" stroke-width="13" stroke-linecap="round"/><path d="M400 200a150 150 0 0 1 -12 108" fill="none" stroke="#FFB020" stroke-width="13" stroke-linecap="round"/><path d="M256 238 L354 152" stroke="#FF4D4D" stroke-width="15" stroke-linecap="round"/><circle cx="256" cy="238" r="21" fill="#FFB020"/><circle cx="256" cy="238" r="8" fill="#0B1219"/><text x="256" y="432" font-family="Inter,Arial,sans-serif" font-size="52" font-weight="900" fill="#EAF2F7" text-anchor="middle">BYKEVIN</text></svg>';
+document.getElementById("go").onclick=async()=>{
+const log=document.getElementById("log"),pv=document.getElementById("preview");
+const line=t=>{log.textContent+=t+"\n";log.scrollTop=log.scrollHeight;};
+log.textContent="";pv.innerHTML="";
+line("› icon.svg");dl(new Blob([SVG],{type:"image/svg+xml"}),"icon.svg");await wait(350);
+const jobs=[["icon-192.png",192,false],["icon-512.png",512,false],["icon-maskable-192.png",192,true],["icon-maskable-512.png",512,true],["apple-touch-icon.png",180,false]];
+for(const[name,size,mask]of jobs){
+line("› "+name+"  ("+size+"×"+size+(mask?", maskable":"")+")");
+const c=draw(size,mask);
+const thumb=document.createElement("canvas");thumb.width=76;thumb.height=76;
+thumb.getContext("2d").drawImage(c,0,0,76,76);
+const fig=document.createElement("figure");fig.appendChild(thumb);
+const cap=document.createElement("figcaption");cap.textContent=name.replace(".png","");fig.appendChild(cap);
+pv.appendChild(fig);dl(await toPng(c),name);await wait(480);}
+line("\n✓ Terminé — 6 fichiers générés.");
+line("Placez-les dans un dossier « icons », puis glissez ce dossier sur GitHub.");};
 })();
 </script>
 </body>
