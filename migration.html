@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>ByKevin — Migration base locale</title>
+<meta name="theme-color" content="#1e40af"/>
+<style>
+:root{--bg:#0f172a;--surface:#111827;--surface2:#1e293b;--border:rgba(255,255,255,.08);--text:#f8fafc;--muted:#94a3b8;--primary:#3b82f6;--success:#22c55e;--danger:#ef4444;--warning:#f59e0b;--radius:14px}
+*{box-sizing:border-box}html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;min-height:100%}
+body{padding:18px;max-width:1000px;margin:0 auto}
+h1{font-size:1.35rem;margin:0 0 6px}h2{font-size:1.05rem;margin:0 0 12px;color:var(--primary)}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:16px}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.btn{border:0;border-radius:10px;padding:12px 16px;font-weight:800;cursor:pointer}
+.btn-primary{background:var(--primary);color:#fff}.btn-success{background:var(--success);color:#052e16}.btn-danger{background:var(--danger);color:#fff}.btn-outline{background:transparent;border:1px solid var(--border);color:var(--text)}
+input,select{width:100%;padding:12px;border-radius:10px;border:1px solid #334155;background:#0b1220;color:var(--text);outline:none}
+label{display:block;font-size:.86rem;color:var(--muted);margin-bottom:6px}
+.muted{color:var(--muted)}.small{font-size:.88rem}
+pre{background:#020617;border:1px solid var(--border);border-radius:12px;padding:12px;min-height:180px;max-height:420px;overflow:auto;white-space:pre-wrap;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.84rem}
+.badge{display:inline-block;padding:4px 9px;border-radius:999px;font-size:.75rem;font-weight:800;border:1px solid var(--border);background:var(--surface2);color:var(--muted)}
+.badge.ok{color:var(--success);border-color:rgba(34,197,94,.3);background:rgba(34,197,94,.1)}
+.badge.ko{color:var(--danger);border-color:rgba(239,68,68,.3);background:rgba(239,68,68,.1)}
+.badge.warn{color:var(--warning);border-color:rgba(245,158,11,.3);background:rgba(245,158,11,.1)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+</style>
+</head>
+<body>
+<h1>🧳 Migration ByKevin</h1>
+<div class="muted small">Import / fusion / rollback depuis les 4 projets (appli-aide-technique, autodiag-formation-auto, kevfusion2026, auto-legal-by-kevin) ou tout export ByKevin.</div>
+
+<div class="card">
+  <h2>1. Source à importer</h2>
+  <div class="grid">
+    <div><label for="sourceFile">Fichier JSON d'export</label><input id="sourceFile" type="file" accept=".json,application/json"/></div>
+    <div><label for="sourcePassword">Mot de passe source (si chiffré)</label><input id="sourcePassword" type="password" placeholder="Vide si non chiffré"/></div>
+    <div><label for="targetPassword">PIN base actuelle (si chiffrée)</label><input id="targetPassword" type="password" placeholder="Requis si base cible chiffrée"/></div>
+  </div>
+  <div class="row">
+    <button id="analyzeBtn" class="btn btn-primary">Analyser sans importer</button>
+    <button id="importBtn" class="btn btn-success">Importer et fusionner</button>
+    <button id="exportCurrentBtn" class="btn btn-outline">Exporter base actuelle</button>
+    <button id="rollbackBtn" class="btn btn-danger">Restaurer dernier snapshot</button>
+  </div>
+</div>
+
+<div class="card">
+  <h2>2. Rapport</h2>
+  <div class="row"><span id="statusBadge" class="badge">En attente</span><span id="candidateCount" class="badge">0 candidate(s)</span><span id="warningCount" class="badge warn">0 avertissement(s)</span></div>
+  <pre id="report">Aucune analyse.</pre>
+</div>
+
+<div class="card">
+  <h2>3. Retour</h2>
+  <div class="muted small">Après import, reviens dans l'app et recharge (Ctrl+Shift+R ou fermer/rouvrir l'APK).</div>
+  <div class="row"><button id="backBtn" class="btn btn-outline">Retour ByKevin</button></div>
+</div>
+
+<script>
+(function(){
+"use strict";
+const DB_NAME="bykevin-v1";
+const enc=new TextEncoder(),dec=new TextDecoder();
+const $=s=>document.querySelector(s);
+const now=()=>Date.now();
+const uid=()=>(crypto.randomUUID?crypto.randomUUID():"id-"+Date.now()+"-"+Math.random().toString(36).slice(2,10));
+function setReport(t){$("#report").textContent=t;}
+function setStatus(type,t){const b=$("#statusBadge");b.className="badge "+type;b.textContent=t;}
+function bufToB64(buf){const b=buf instanceof Uint8Array?buf:new Uint8Array(buf);let s="";const c=0x8000;for(let i=0;i<b.length;i+=c)s+=String.fromCharCode.apply(null,b.subarray(i,i+c));return btoa(s);}
+function b64ToBuf(b64){const bin=atob(b64);const out=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)out[i]=bin.charCodeAt(i);return out;}
+async function deriveKey(pw,saltB64,it=120000){const salt=b64ToBuf(saltB64);const km=await crypto.subtle.importKey("raw",enc.encode(pw),"PBKDF2",false,["deriveKey"]);return crypto.subtle.deriveKey({name:"PBKDF2",salt,iterations:it,hash:"SHA-256"},km,{name:"AES-GCM",length:256},true,["encrypt","decrypt"]);}
+async function decKey(key,ivB64,cB64){return crypto.subtle.decrypt({name:"AES-GCM",iv:b64ToBuf(ivB64)},key,b64ToBuf(cB64));}
+let idbP=null;
+function openIdb(){if(idbP)return idbP;idbP=new Promise((res,rej)=>{const r=indexedDB.open(DB_NAME,1);r.onupgradeneeded=()=>{const d=r.result;["kv","secure","queue"].forEach(s=>{if(!d.objectStoreNames.contains(s))d.createObjectStore(s);});};r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);});return idbP;}
+async function idbGet(st,k){const d=await openIdb();return new Promise((res,rej)=>{const t=d.transaction(st,"readonly");const r=t.objectStore(st).get(k);r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);});}
+async function idbSet(st,k,v){const d=await openIdb();return new Promise((res,rej)=>{const t=d.transaction(st,"readwrite");const r=t.objectStore(st).put(v,k);r.onsuccess=()=>res(true);r.onerror=()=>rej(r.error);});}
+async function idbDel(st,k){const d=await openIdb();return new Promise((res,rej)=>{const t=d.transaction(st,"readwrite");const r=t.objectStore(st).delete(k);r.onsuccess=()=>res(true);r.onerror=()=>rej(r.error);});}
+function defaultLocal(){return{version:0,reference:{brands:[],models:[],engines:[],faults:[]},workshop:{profile:null,vehicles:{},interventions:{}},mrt:{history:{}},legal:{folders:{}},elm_logs:[],audit:[],elm_profiles:null,settings:{background:{enabled:false,type:"image",url:"",opacity:0.8,blur:0,overlay:0.45,fit:"cover",applyToGuests:true,updated_at:0},ownerCode:"BYKEVIN-OWNER",apiBase:""},devices:{},access_requests:{},suivi:[],bugs:[],revocation:null};}
+function isObj(v){return v&&typeof v==="object"&&!Array.isArray(v);}
+function looksEncrypted(o){return isObj(o)&&o.v===1&&o.alg==="AES-GCM"&&o.salt_b64&&o.iv_b64&&o.cipher_b64;}
+function looksLocal(o){if(!isObj(o))return false;return ["reference","workshop","settings","suivi","access_requests","devices","elm_logs","audit","elm_profiles","mrt","legal"].some(k=>Object.prototype.hasOwnProperty.call(o,k));}
+function scoreLocal(o){if(!looksLocal(o))return 0;let s=0;if(o.reference)s+=20;if(o.workshop)s+=30;if(o.settings)s+=10;if(o.mrt)s+=8;if(o.legal)s+=8;if(o.suivi)s+=6;if(o.access_requests)s+=6;if(o.devices)s+=6;if(o.elm_logs)s+=4;if(o.audit)s+=4;if(o.workshop?.vehicles)s+=Object.keys(o.workshop.vehicles).length;if(o.workshop?.interventions)s+=Object.keys(o.workshop.interventions).length;if(o.mrt?.history)s+=Object.keys(o.mrt.history).length;if(o.legal?.folders)s+=Object.keys(o.legal.folders).length;return s;}
+function parseMaybe(v){if(typeof v!=="string")return v;const t=v.trim();if((t.startsWith("{")&&t.endsWith("}"))||(t.startsWith("[")&&t.endsWith("]"))){try{return JSON.parse(t);}catch{return v;}}return v;}
+function collect(value,path,out,depth=0){if(depth>6)return;const p=parseMaybe(value);if(looksEncrypted(p)){out.encrypted.push({path,package:p});return;}if(looksLocal(p))out.locals.push({path,obj:p,score:scoreLocal(p)});if(isObj(p))for(const k of ["data","state","local","payload","value"])if(Object.prototype.hasOwnProperty.call(p,k))collect(p[k],path+"."+k,out,depth+1);}
+function collectDump(payload,out){if(Array.isArray(payload.indexedDB))for(const db of payload.indexedDB)for(const store of db.stores||[])for(const e of store.entries||[])collect(e.value,`idb:${db.name}/${store.name}/${String(e.key)}`,out);if(isObj(payload.localStorage))for(const[k,v]of Object.entries(payload.localStorage))collect(v,`ls:${k}`,out);}
+async function decryptCandidates(cands,pw){const locals=[],warnings=[];if(!cands.length)return{locals,warnings};if(!pw){warnings.push("Paquets chiffrés trouvés mais aucun mot de passe source fourni.");return{locals,warnings};}for(const c of cands){try{const key=await deriveKey(pw,c.package.salt_b64,c.package.iterations||120000);const plain=await decKey(key,c.package.iv_b64,c.package.cipher_b64);const obj=JSON.parse(dec.decode(plain));const sub={locals:[],encrypted:[]};collect(obj,c.path+".decrypted",sub);locals.push(...sub.locals);}catch(err){warnings.push("Échec déchiffrement "+c.path+" : "+err.message);}}return{locals,warnings};}
+function uniq(a){return Array.from(new Set(a.filter(Boolean).map(String)));}
+function normSuivi(x){if(!x)return"";if(typeof x==="string")return x;if(typeof x==="object")return String(x.id||x.model_id||x.modelId||x.name||x.plate||x.vin||"");return String(x);}
+function mergeArrById(t,s,key="id"){if(!Array.isArray(s))return t;const m=new Map((Array.isArray(t)?t:[]).map(x=>[x?.[key]||JSON.stringify(x),x]));for(const it of s){const id=it?.[key]||JSON.stringify(it);if(!m.has(id))m.set(id,it);}return Array.from(m.values());}
+function mergeMap(t,s){return Object.assign({},t||{},s||{});}
+function mergeSettings(t,s){const out=Object.assign({},t||{});if(!isObj(s))return out;for(const[k,v]of Object.entries(s)){if(k==="background"&&isObj(v))out.background=Object.assign({},out.background||{},v);else if(isObj(v)&&isObj(out[k]))out[k]=mergeSettings(out[k],v);else out[k]=v;}return out;}
+function mergeLocal(target,source){if(!isObj(source))return target;target.version=Math.max(Number(target.version||0),Number(source.version||0));if(source.reference){target.reference=target.reference||{brands:[],models:[],engines:[],faults:[]};target.reference.brands=mergeArrById(target.reference.brands,source.reference.brands);target.reference.models=mergeArrById(target.reference.models,source.reference.models);target.reference.engines=mergeArrById(target.reference.engines,source.reference.engines);target.reference.faults=mergeArrById(target.reference.faults,source.reference.faults);}if(source.workshop){target.workshop=target.workshop||{profile:null,vehicles:{},interventions:{}};if(source.workshop.profile)target.workshop.profile=source.workshop.profile;target.workshop.vehicles=mergeMap(target.workshop.vehicles,source.workshop.vehicles);target.workshop.interventions=mergeMap(target.workshop.interventions,source.workshop.interventions);}if(source.mrt){target.mrt=target.mrt||{history:{}};target.mrt.history=mergeMap(target.mrt.history,source.mrt.history);}if(source.legal){target.legal=target.legal||{folders:{}};target.legal.folders=mergeMap(target.legal.folders,source.legal.folders);}if(source.settings)target.settings=mergeSettings(target.settings,source.settings);if(Array.isArray(source.suivi))target.suivi=uniq([...(target.suivi||[]).map(normSuivi),...source.suivi.map(normSuivi)]).filter(Boolean).slice(0,20);if(Array.isArray(source.elm_logs))target.elm_logs=mergeArrById(target.elm_logs||[],source.elm_logs).slice(0,500);if(Array.isArray(source.audit))target.audit=mergeArrById(target.audit||[],source.audit).slice(0,500);if(Array.isArray(source.bugs))target.bugs=mergeArrById(target.bugs||[],source.bugs).slice(0,200);if(source.devices)target.devices=mergeMap(target.devices,source.devices);if(source.access_requests)target.access_requests=mergeMap(target.access_requests,source.access_requests);if(source.elm_profiles)target.elm_profiles=source.elm_profiles;if(source.revocation)target.revocation=source.revocation;return target;}
+function enforce(local){local.suivi=uniq((local.suivi||[]).map(normSuivi)).filter(Boolean).slice(0,20);local.elm_logs=Array.isArray(local.elm_logs)?local.elm_logs.slice(0,500):[];local.audit=Array.isArray(local.audit)?local.audit.slice(0,500):[];local.bugs=Array.isArray(local.bugs)?local.bugs.slice(0,200):[];local.devices=local.devices||{};local.access_requests=local.access_requests||{};local.workshop=local.workshop||{profile:null,vehicles:{},interventions:{}};local.workshop.vehicles=local.workshop.vehicles||{};local.workshop.interventions=local.workshop.interventions||{};local.mrt=local.mrt||{history:{}};local.mrt.history=local.mrt.history||{};local.legal=local.legal||{folders:{}};local.legal.folders=local.legal.folders||{};local.settings=local.settings||defaultLocal().settings;local.settings.background=Object.assign({},defaultLocal().settings.background,local.settings.background||{});return local;}
+async function loadCurrent(targetPw){const cfg=await idbGet("kv","encryption");if(cfg?.enabled){if(!targetPw)throw new Error("Base cible chiffrée : entre le PIN cible.");const pkg=await idbGet("secure","local");if(!pkg)throw new Error("Base chiffrée cible absente.");const key=await deriveKey(targetPw,cfg.salt_b64,cfg.iterations||120000);const plain=await decKey(key,pkg.iv_b64,pkg.cipher_b64);return{local:JSON.parse(dec.decode(plain)),encryption:cfg};}const plain=await idbGet("kv","local_plain");return{local:plain?JSON.parse(plain):defaultLocal(),encryption:null};}
+async function saveLocal(local,targetPw,encryption,snapshot=true){const clean=enforce(local);if(snapshot){try{const cur=await loadCurrent(targetPw);await idbSet("kv","migration_rollback_latest",JSON.stringify(cur.local));await idbSet("kv","migration_rollback_meta",JSON.stringify({at:now(),enc:!!encryption}));}catch(e){console.warn("Snapshot impossible:",e);}}const json=JSON.stringify(clean);if(encryption?.enabled){if(!targetPw)throw new Error("PIN cible requis pour ré-enregistrer la base chiffrée.");const key=await deriveKey(targetPw,encryption.salt_b64,encryption.iterations||120000);const iv=crypto.getRandomValues(new Uint8Array(12));const cipher=await crypto.subtle.encrypt({name:"AES-GCM",iv},key,enc.encode(json));await idbSet("secure","local",{iv_b64:bufToB64(iv),cipher_b64:bufToB64(cipher)});await idbDel("kv","local_plain");}else{await idbSet("kv","local_plain",json);await idbDel("secure","local");}return clean;}
+async function readPayload(){const f=$("#sourceFile").files?.[0];if(!f)throw new Error("Sélectionne un fichier JSON.");return JSON.parse(await f.text());}
+async function buildCandidates(){const payload=await readPayload();const out={locals:[],encrypted:[]};collect(payload,"root",out);collectDump(payload,out);const dec2=await decryptCandidates(out.encrypted,$("#sourcePassword").value||"");out.locals.push(...dec2.locals);const warnings=dec2.warnings.slice();if(!out.locals.length)warnings.push("Aucune base locale exploitable trouvée.");out.locals.sort((a,b)=>b.score-a.score);return{out,warnings};}
+function summarize(locals){return locals.map((c,i)=>{const o=c.obj;return `#${i+1} score=${c.score} path=${c.path}\n  vehicles=${Object.keys(o.workshop?.vehicles||{}).length} interventions=${Object.keys(o.workshop?.interventions||{}).length}\n  mrt=${Object.keys(o.mrt?.history||{}).length} legal=${Object.keys(o.legal?.folders||{}).length} suivi=${Array.isArray(o.suivi)?o.suivi.length:0}\n  devices=${Object.keys(o.devices||{}).length} requests=${Object.keys(o.access_requests||{}).length}`;}).join("\n\n");}
+async function analyze(){setStatus("warn","Analyse...");setReport("Analyse en cours...");try{const{out,warnings}=await buildCandidates();$("#candidateCount").textContent=out.locals.length+" candidate(s)";$("#warningCount").textContent=warnings.length+" avertissement(s)";setReport(["Analyse terminée.","","Candidates :",summarize(out.locals)||"Aucune.","","Avertissements :",warnings.length?warnings.join("\n"):"Aucun."].join("\n"));setStatus(out.locals.length?"ok":"ko",out.locals.length?"Analyse OK":"Aucune donnée");}catch(err){setReport("Erreur d'analyse : "+err.message);setStatus("ko","Erreur");}}
+async function importMerge(){setStatus("warn","Import...");setReport("Import en cours...");try{const targetPw=$("#targetPassword").value||"";const{local:current,encryption}=await loadCurrent(targetPw);const{out,warnings}=await buildCandidates();if(!out.locals.length){setReport("Import annulé : aucune candidate.\n\n"+warnings.join("\n"));setStatus("ko","Rien à importer");return;}const merged=enforce(JSON.parse(JSON.stringify(current)));for(const c of out.locals)mergeLocal(merged,c.obj);await saveLocal(merged,targetPw,encryption,true);setReport(["Import fusionné avec succès.","","Véhicules : "+Object.keys(merged.workshop.vehicles).length,"Interventions : "+Object.keys(merged.workshop.interventions).length,"Pré-visites MRT : "+Object.keys(merged.mrt.history).length,"Dossiers juridiques : "+Object.keys(merged.legal.folders).length,"Suivi (≤20) : "+merged.suivi.length,"Appareils : "+Object.keys(merged.devices).length,"Demandes : "+Object.keys(merged.access_requests).length,"Journaux ELM : "+merged.elm_logs.length,"Audit : "+merged.audit.length,"","Avertissements :",warnings.length?warnings.join("\n"):"Aucun.","","Snapshot de rollback enregistré."].join("\n"));setStatus("ok","Import OK");}catch(err){setReport("Erreur d'import : "+err.message);setStatus("ko","Erreur");}}
+async function exportCurrent(){try{const{local}=await loadCurrent($("#targetPassword").value||"");const blob=new Blob([JSON.stringify(local,null,2)],{type:"application/json"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="bykevin-current-"+new Date().toISOString().replace(/[:.]/g,"-")+".json";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2000);setStatus("ok","Export OK");setReport("Base actuelle exportée.");}catch(err){setStatus("ko","Erreur");setReport("Erreur export : "+err.message);}}
+async function rollback(){try{const targetPw=$("#targetPassword").value||"";const raw=await idbGet("kv","migration_rollback_latest");if(!raw)throw new Error("Aucun snapshot disponible.");const local=JSON.parse(raw);const cfg=await idbGet("kv","encryption");await saveLocal(local,targetPw,cfg,false);setStatus("ok","Rollback OK");setReport("Dernier snapshot restauré.");}catch(err){setStatus("ko","Erreur");setReport("Erreur rollback : "+err.message);}}
+$("#analyzeBtn").onclick=analyze;$("#importBtn").onclick=importMerge;$("#exportCurrentBtn").onclick=exportCurrent;$("#rollbackBtn").onclick=rollback;
+(function(){const ret=new URLSearchParams(location.search).get("return");$("#backBtn").onclick=()=>{location.href=ret||"./index.html";};})();
+})();
+</script>
+</body>
+</html>
